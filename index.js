@@ -1,25 +1,41 @@
-const { Telegraf, Markup } = require('telegraf')
+const { Telegraf, Markup, Scenes, session } = require('telegraf')
+const menu = require('./menu')
+const keluhanScene = require('./scenes/keluhan')
+const pengajuanScene = require('./scenes/pengajuan')
+const profilScene = require('./scenes/profil')
 require('dotenv').config()
+
 const BOT_TOKEN = process.env.BOT_TOKEN
 const URL = process.env.URL
 const PORT = process.env.PORT || 3000
 
 const bot = new Telegraf(BOT_TOKEN)
 
+// use stage
+const stage = new Scenes.Stage([profilScene, pengajuanScene, keluhanScene])
+bot.use(session())
+bot.use(stage.middleware())
+
 bot.start((ctx) => hi(ctx))
 
 bot.hears('hi', (ctx) => hi(ctx))
+bot.hears('menu', (ctx) => menu(ctx))
+
+bot.command('menu', (ctx) => menu(ctx))
 
 bot.action('PROFIL', (ctx) => {
-    ctx.reply('BANKITA adalah salah satu bank swasta di Indonesia yang didirikan pada tahun 2021. 4 Mahasiswi UPN Veteran Jakarta menjadi orang dibalik kesuksesan Bank ini. BANKITA merupakan bank Gen Z dengan target nasabahnya yaitu Mahasiswa/i di seluruh Indonesia. Keuntungan yang didapat saat membuka rekening di Bank ini selain mendapat kartu ATM dan buku tabungan, kamu juga bisa melakukan transaksi di aplikasi M-Banking mulai dari transfer antar bank, pembayaran melalui Scan QR, maupun pembelian produk digital lainnya. \n\nJadi sangat cocok untuk Pelajar bukan?')
+    ctx.scene.leave()
+    ctx.scene.enter('PROFIL_SCENE')
 })
 
 bot.action('PENGAJUAN', (ctx) => {
-    ctx.reply('Menu Pengajuan masih dalam tahap perbaikan.')
+    ctx.scene.leave()
+    ctx.scene.enter('PENGAJUAN_SCENE')
 })
 
 bot.action('KELUHAN', (ctx) => {
-    ctx.reply('Menu Keluhan masih dalam tahap perbaikan.')
+    ctx.scene.leave()
+    ctx.scene.enter('KELUHAN_SCENE')
 })
 
 function hi(ctx) {
