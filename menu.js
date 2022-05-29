@@ -1,3 +1,5 @@
+const { Markup } = require("telegraf")
+
 function menu(ctx) {
     ctx.reply('Silakan pilih menu dibawah ini', Markup.inlineKeyboard([
         Markup.button.callback('Profil', 'PROFIL'),
